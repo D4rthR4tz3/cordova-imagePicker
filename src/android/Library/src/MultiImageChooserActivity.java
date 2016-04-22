@@ -53,6 +53,7 @@ import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -76,6 +77,10 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import org.chromium.ui.resources.Resource;
+
+import de.awenko.mobile.R;
 
 public class MultiImageChooserActivity extends Activity implements OnItemClickListener,
         LoaderManager.LoaderCallbacks<Cursor> {
@@ -117,6 +122,8 @@ public class MultiImageChooserActivity extends Activity implements OnItemClickLi
     private FakeR fakeR;
     
     private ProgressDialog progress;
+
+    private Resources resources;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -167,14 +174,16 @@ public class MultiImageChooserActivity extends Activity implements OnItemClickLi
         ia = new ImageAdapter(this);
         gridView.setAdapter(ia);
 
+        resources = getResources();
+
         LoaderManager.enableDebugLogging(false);
         getLoaderManager().initLoader(CURSORLOADER_THUMBS, null, this);
         getLoaderManager().initLoader(CURSORLOADER_REAL, null, this);
         setupHeader();
         updateAcceptButton();
         progress = new ProgressDialog(this);
-        progress.setTitle("Processing Images");
-        progress.setMessage("This may take a few moments");
+        progress.setTitle(resources.getString(R.string.processing_images_header));
+        progress.setMessage(resources.getString(R.string.processing_images_message));
     }
     
     @Override
@@ -189,8 +198,8 @@ public class MultiImageChooserActivity extends Activity implements OnItemClickLi
         if (maxImages == 0 && isChecked) {
             isChecked = false;
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Maximum " + maxImageCount + " Photos");
-            builder.setMessage("You can only select " + maxImageCount + " photos at a time.");
+            builder.setTitle(resources.getString(R.string.maximum_selection_count_error_header));
+            builder.setMessage(String.format(resources.getString(R.string.maximum_selection_count_error_message), maxImageCount));
             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) { 
                     dialog.cancel();
